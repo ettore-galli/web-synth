@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="./synth-core.js"></script>
+    <script src="./synth-ui.js"></script>
+</head>
+<template id="key-template">
+    <div class="keys-grid-element" style="background-color: #cccccc; width: 1px; height: 150px;"></div>
+</template>
+
+<body>
+    <div>
+
+        vol <input type="range" id="volume" min="0" max="2" value="0.03" step="0.01">
+        <br />
+        frq <input type="range" id="filter-frequency" min="0" max="5000" value="0" step="1">
+        <br />
+        f-q <input type="range" id="filter-q" min="0" max="10" value="2" step="0.01">
+        <br />
+        <div id="key-area-up" class="keys-grid-container"></div>
+        <div id="space" class="keys-spacer"></div>
+        <div id="key-area-down" class="keys-grid-container"></div>
+    </div>
+</body>
+<script>
+
+    'use strict'
+
+    initSynth(window, document);
+
+    // 1030193001811
+    // 103019 3001811
+    // 800 422 422
+
+</script>
+
+</html>

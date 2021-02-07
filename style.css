@@ -1,0 +1,11 @@
+.keys-grid-container {
+    padding: 0px;
+}
+.keys-spacer {
+    padding: 0px;
+    height: 200px;
+}
+.keys-grid-element {
+    float: left;
+    margin: 0.1%;
+}
