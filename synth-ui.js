@@ -36,16 +36,52 @@ class SynthUIState {
 
 }
 
-
-
-
-
 function getKeyIdFromNumber(keyNumber) {
     return "area" + String(keyNumber);
 }
 
 function getKeyFromNumber(keyNumber) {
     return document.getElementById(getKeyIdFromNumber(keyNumber))
+}
+
+function getControllerVaue(controllerValue, controllerMaxValue, dimensionalValue, reverse) {
+    if (reverse){
+        return dimensionalValue * (controllerMaxValue - controllerValue) / controllerMaxValue;
+    } else {
+        return dimensionalValue * controllerValue / controllerMaxValue;
+    }
+    
+}
+
+function buildPadKey(synth, synthState, numberOfKeys, keyAreaId) {
+    for (let i = 0; i < numberOfKeys; i++) {
+
+        const keyNumber = i + 1;
+        const key = document.getElementById("key-template").content.cloneNode(true).children[0];
+
+        key.id = getKeyIdFromNumber(keyNumber);
+        key.style.width = String(95.0 / numberOfKeys) + "%";
+        document.getElementById(keyAreaId).appendChild(key);
+
+
+        key.onmouseover = function (e) {
+            synth.playNoteNumber(keyNumber, synthState.getVolume());
+        }
+
+        key.onmousemove = function (e) {
+            var rect = e.target.getBoundingClientRect();
+            var x = e.clientX - rect.left; // x position within the element.
+            var y = e.clientY - rect.top;  // y position within the element.
+            var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
+            var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
+            synth.setFilterFrequency(filterFrequency);
+        }
+
+        key.onmouseleave = function (e) {
+            synth.releaseNote();
+        }
+
+    }
 }
 
 function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
@@ -67,8 +103,8 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
             var rect = e.target.getBoundingClientRect();
             var x = e.clientX - rect.left; // x position within the element.
             var y = e.clientY - rect.top;  // y position within the element.
-            console.log("flt freq " + synthState.getFilterFrequency())
             var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
+            var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
             synth.setFilterFrequency(filterFrequency);
         }
 
