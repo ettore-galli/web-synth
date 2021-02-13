@@ -1,14 +1,14 @@
 'use strict'
 
 
-class SynthUIState {
+class SynthUIStateManager {
     constructor() {
 
         this.state = {
             control: {
-                volume: 0,
-                filterFrequency: 0,
-                filterQ: 0,
+                volume: 0.1,
+                filterFrequency: 1000,
+                filterQ: 3,
             },
             note: {
                 noteFrequency: 0,
@@ -76,7 +76,7 @@ class SynthUIState {
         this.getControlVolume = () => this.getState().control.volume;
         this.getControlFilterFrequency = () => this.getState().control.filterFrequency;
         this.getControlFilterQ = () => this.getState().control.filterQ;
-        
+
     }
 
 }
@@ -111,7 +111,7 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            const noteFrequency = 220*Math.pow(2, keyNumber / 12)
+            const noteFrequency = 220 * Math.pow(2, keyNumber / 12)
             synthState.playNoteAtControlVolume(noteFrequency)
         }
 
@@ -124,50 +124,62 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
         }
 
         key.onmouseleave = function (e) {
-            // synth.releaseNote();
             synthState.releaseNote();
         }
 
     }
 }
 
+function sendStateToSynth(state, synth) {
+    synth.setFilterFrequency(state.note.filterFrequency);
+    synth.setFilterQ(state.note.filterQ);
+    synth.playNote(state.note.noteFrequency, state.note.volume);
+}
+
+function sendStateToUI(state, volumeController, filterFrequency, filterQ) {
+    document.getElementById("debug").innerHTML = JSON.stringify(state);
+
+    volumeController.value = state.control.volume;
+    filterFrequency.value = state.control.filterFrequency;
+    filterQ.value = state.control.filterQ;
+}
+
 function initSynth(window, document) {
     const synth = new WebSynth(window);
-    const synthUIState = new SynthUIState();
+    const synthUIStateManager = new SynthUIStateManager();
 
     const volumeController = document.getElementById('volume');
     const filterFrequency = document.getElementById('filter-frequency');
     const filterQ = document.getElementById('filter-q');
 
-    synthUIState.addUppdateSubscriber(
-        (state) => {
-            document.getElementById("debug").innerHTML = JSON.stringify(state);
+    sendStateToUI(synthUIStateManager.getState(), volumeController, filterFrequency, filterQ)
 
-            synth.setFilterFrequency(state.note.filterFrequency);
-            synth.setFilterQ(state.note.filterQ);
-            synth.playNote(state.note.noteFrequency, state.note.volume);
+    synthUIStateManager.addUppdateSubscriber(
+        (state) => {
+            sendStateToSynth(state, synth);
+            sendStateToUI(state, volumeController, filterFrequency, filterQ);
         }
     );
 
     volumeController.addEventListener('input', function () {
-        synthUIState.setControlVolume(this.value);
+        synthUIStateManager.setControlVolume(this.value);
     }
     );
 
     filterFrequency.addEventListener('input', function () {
-        synthUIState.setControlFilterFrequency(this.value);
+        synthUIStateManager.setControlFilterFrequency(this.value);
     }
     );
 
     filterQ.addEventListener('input', function () {
-        synthUIState.setControlFilterQ(this.value);
+        synthUIStateManager.setControlFilterQ(this.value);
     }
     );
 
     const numberOfKeys = synth.noteMap.length;
 
-    buildPadKeyboard(synth, synthUIState, numberOfKeys, "key-area-up");
-    buildPadKeyboard(synth, synthUIState, numberOfKeys, "key-area-down");
+    buildPadKeyboard(synth, synthUIStateManager, numberOfKeys, "key-area-up");
+    buildPadKeyboard(synth, synthUIStateManager, numberOfKeys, "key-area-down");
 
-    window.ettore = synthUIState; // DEBUG-ONLY
+    window.ettore = synthUIStateManager; // DEBUG-ONLY
 }
