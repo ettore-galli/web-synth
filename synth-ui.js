@@ -5,7 +5,7 @@ class SynthUIState {
     constructor() {
 
         this.state = {
-            volume: 0,
+            masterVolume: 0,
             filterFrequency: 0,
             filterQ: 0
         };
@@ -29,7 +29,7 @@ class SynthUIState {
         }
 
 
-        this.getVolume = () => this.getState().volume;
+        this.getMasterVolume = () => this.getState().masterVolume;
         this.getFilterFrequency = () => this.getState().filterFrequency;
         this.getFilterQ = () => this.getState().filterQ;
     }
@@ -65,7 +65,7 @@ function buildPadKey(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            synth.playNoteNumber(keyNumber, synthState.getVolume());
+            synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
         }
 
         key.onmousemove = function (e) {
@@ -96,7 +96,7 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            synth.playNoteNumber(keyNumber, synthState.getVolume());
+            synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
         }
 
         key.onmousemove = function (e) {
@@ -126,7 +126,7 @@ function initSynth(window, document) {
 
     synthUIState.addUppdateSubscriber(
         (state) => {
-            synth.setVolume(state.volume);
+            synth.setVolume(state.masterVolume);
         }
     );
 
@@ -143,7 +143,7 @@ function initSynth(window, document) {
     );
 
     volumeController.addEventListener('input', function () {
-        synthUIState.updateState("volume", this.value);
+        synthUIState.updateState("masterVolume", this.value);
     }
     );
 
