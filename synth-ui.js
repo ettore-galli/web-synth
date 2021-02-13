@@ -5,12 +5,16 @@ class SynthUIState {
     constructor() {
 
         this.state = {
-            masterVolume: 0,
-            filterFrequency: 0,
-            filterQ: 0,
+            control: {
+                volume: 0,
+                filterFrequency: 0,
+                filterQ: 0,
+            },
             note: {
-                synthNoteNumber : 0, 
-                noteVolume: 0
+                noteFrequency: 0,
+                volume: 0,
+                filterFrequency: 0,
+                filterQ: 0,
             }
         };
 
@@ -32,28 +36,47 @@ class SynthUIState {
             this.updateSubscribers.forEach(subscriber => subscriber(this.getState()));
         }
 
-        this.setNote = (id, note)=>{
-            this.state = {
-                ...this.state,
-                note
-            }    
+        this.setControlVolume = (value) => {
+            this.updateState("control", { ...this.state.control, volume: value });
+        }
+        this.setControlFilterFrequency = (value) => {
+            this.updateState("control", { ...this.state.control, filterFrequency: value });
+        }
+        this.setControlFilterQ = (value) => {
+            this.updateState("control", { ...this.state.control, filterQ: value });
         }
 
-        this.playNoteNumber = (synthNoteNumber, noteVolume) => {
-            this.setNote({synthNoteNumber, noteVolume});
+        this.playNote = (noteFrequency, volume) => {
+            this.updateState("note", {
+                ...this.state.note,
+                noteFrequency: noteFrequency,
+                volume: volume,
+                filterQ: this.state.control.filterQ,
+            });
         }
 
-        this.setNoteVolume = (noteVolume) => {
-            this.setNote({...this.note, noteVolume});
+        this.playNoteAtControlVolume = (noteFrequency) => {
+            this.playNote(noteFrequency, this.state.control.volume);
         }
 
         this.releaseNote = () => {
-            this.this.setNoteVolume(0);
+            this.updateState("note", {
+                ...this.state.note,
+                volume: 0.0
+            });
         }
 
-        this.getMasterVolume = () => this.getState().masterVolume;
-        this.getFilterFrequency = () => this.getState().filterFrequency;
-        this.getFilterQ = () => this.getState().filterQ;
+        this.setNoteFilterFrequency = (filterFrequency) => {
+            this.updateState("note", {
+                ...this.state.note,
+                filterFrequency: filterFrequency
+            });
+        }
+
+        this.getControlVolume = () => this.getState().control.volume;
+        this.getControlFilterFrequency = () => this.getState().control.filterFrequency;
+        this.getControlFilterQ = () => this.getState().control.filterQ;
+        
     }
 
 }
@@ -75,36 +98,6 @@ function getControllerVaue(controllerValue, controllerMaxValue, dimensionalValue
 
 }
 
-// function buildPadKey(synth, synthState, numberOfKeys, keyAreaId) {
-//     for (let i = 0; i < numberOfKeys; i++) {
-
-//         const keyNumber = i + 1;
-//         const key = document.getElementById("key-template").content.cloneNode(true).children[0];
-
-//         key.id = getKeyIdFromNumber(keyNumber);
-//         key.style.width = String(95.0 / numberOfKeys) + "%";
-//         document.getElementById(keyAreaId).appendChild(key);
-
-
-//         key.onmouseover = function (e) {
-//             synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
-//         }
-
-//         key.onmousemove = function (e) {
-//             var rect = e.target.getBoundingClientRect();
-//             var x = e.clientX - rect.left; // x position within the element.
-//             var y = e.clientY - rect.top;  // y position within the element.
-//             var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
-//             var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
-//             synth.setFilterFrequency(filterFrequency);
-//         }
-
-//         key.onmouseleave = function (e) {
-//             synth.releaseNote();
-//         }
-
-//     }
-// }
 
 function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
     for (let i = 0; i < numberOfKeys; i++) {
@@ -118,22 +111,21 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            // synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
-            synthUIState.playNoteNumber(keyNumber, synthState.getMasterVolume());
+            const noteFrequency = 220*Math.pow(2, keyNumber / 12)
+            synthState.playNoteAtControlVolume(noteFrequency)
         }
 
         key.onmousemove = function (e) {
             var rect = e.target.getBoundingClientRect();
             var x = e.clientX - rect.left; // x position within the element.
             var y = e.clientY - rect.top;  // y position within the element.
-            var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
-            var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
-            synth.setFilterFrequency(filterFrequency);
+            var filterFrequency = getControllerVaue(y, rect.height, synthState.getControlFilterFrequency(), true)
+            synthState.setNoteFilterFrequency(filterFrequency);
         }
 
         key.onmouseleave = function (e) {
             // synth.releaseNote();
-            synthUIState.playNoteNumber(0, 0);
+            synthState.releaseNote();
         }
 
     }
@@ -149,26 +141,26 @@ function initSynth(window, document) {
 
     synthUIState.addUppdateSubscriber(
         (state) => {
-            //console.log(state);
-            synth.setVolume(state.masterVolume);
-            synth.setFilterFrequency(state.filterFrequency);
-            synth.setFilterQ(state.filterQ);
-            synth.playNoteNumber(state.note.synthNoteNumber, state.note.noteVolume);
+            document.getElementById("debug").innerHTML = JSON.stringify(state);
+
+            synth.setFilterFrequency(state.note.filterFrequency);
+            synth.setFilterQ(state.note.filterQ);
+            synth.playNote(state.note.noteFrequency, state.note.volume);
         }
     );
 
     volumeController.addEventListener('input', function () {
-        synthUIState.updateState("masterVolume", this.value);
+        synthUIState.setControlVolume(this.value);
     }
     );
 
     filterFrequency.addEventListener('input', function () {
-        synthUIState.updateState("filterFrequency", this.value);
+        synthUIState.setControlFilterFrequency(this.value);
     }
     );
 
     filterQ.addEventListener('input', function () {
-        synthUIState.updateState("filterQ", this.value);
+        synthUIState.setControlFilterQ(this.value);
     }
     );
 
