@@ -7,7 +7,11 @@ class SynthUIState {
         this.state = {
             masterVolume: 0,
             filterFrequency: 0,
-            filterQ: 0
+            filterQ: 0,
+            note: {
+                synthNoteNumber : 0, 
+                noteVolume: 0
+            }
         };
 
         this.updateSubscribers = [];
@@ -28,6 +32,24 @@ class SynthUIState {
             this.updateSubscribers.forEach(subscriber => subscriber(this.getState()));
         }
 
+        this.setNote = (id, note)=>{
+            this.state = {
+                ...this.state,
+                note
+            }    
+        }
+
+        this.playNoteNumber = (synthNoteNumber, noteVolume) => {
+            this.setNote({synthNoteNumber, noteVolume});
+        }
+
+        this.setNoteVolume = (noteVolume) => {
+            this.setNote({...this.note, noteVolume});
+        }
+
+        this.releaseNote = () => {
+            this.this.setNoteVolume(0);
+        }
 
         this.getMasterVolume = () => this.getState().masterVolume;
         this.getFilterFrequency = () => this.getState().filterFrequency;
@@ -45,44 +67,44 @@ function getKeyFromNumber(keyNumber) {
 }
 
 function getControllerVaue(controllerValue, controllerMaxValue, dimensionalValue, reverse) {
-    if (reverse){
+    if (reverse) {
         return dimensionalValue * (controllerMaxValue - controllerValue) / controllerMaxValue;
     } else {
         return dimensionalValue * controllerValue / controllerMaxValue;
     }
-    
+
 }
 
-function buildPadKey(synth, synthState, numberOfKeys, keyAreaId) {
-    for (let i = 0; i < numberOfKeys; i++) {
+// function buildPadKey(synth, synthState, numberOfKeys, keyAreaId) {
+//     for (let i = 0; i < numberOfKeys; i++) {
 
-        const keyNumber = i + 1;
-        const key = document.getElementById("key-template").content.cloneNode(true).children[0];
+//         const keyNumber = i + 1;
+//         const key = document.getElementById("key-template").content.cloneNode(true).children[0];
 
-        key.id = getKeyIdFromNumber(keyNumber);
-        key.style.width = String(95.0 / numberOfKeys) + "%";
-        document.getElementById(keyAreaId).appendChild(key);
+//         key.id = getKeyIdFromNumber(keyNumber);
+//         key.style.width = String(95.0 / numberOfKeys) + "%";
+//         document.getElementById(keyAreaId).appendChild(key);
 
 
-        key.onmouseover = function (e) {
-            synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
-        }
+//         key.onmouseover = function (e) {
+//             synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
+//         }
 
-        key.onmousemove = function (e) {
-            var rect = e.target.getBoundingClientRect();
-            var x = e.clientX - rect.left; // x position within the element.
-            var y = e.clientY - rect.top;  // y position within the element.
-            var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
-            var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
-            synth.setFilterFrequency(filterFrequency);
-        }
+//         key.onmousemove = function (e) {
+//             var rect = e.target.getBoundingClientRect();
+//             var x = e.clientX - rect.left; // x position within the element.
+//             var y = e.clientY - rect.top;  // y position within the element.
+//             var filterFrequency = (y / rect.height) * synthState.getFilterFrequency();
+//             var filterFrequency = getControllerVaue(y, rect.height, synthState.getFilterFrequency(), true)
+//             synth.setFilterFrequency(filterFrequency);
+//         }
 
-        key.onmouseleave = function (e) {
-            synth.releaseNote();
-        }
+//         key.onmouseleave = function (e) {
+//             synth.releaseNote();
+//         }
 
-    }
-}
+//     }
+// }
 
 function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
     for (let i = 0; i < numberOfKeys; i++) {
@@ -96,7 +118,8 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
+            // synth.playNoteNumber(keyNumber, synthState.getMasterVolume());
+            synthUIState.playNoteNumber(keyNumber, synthState.getMasterVolume());
         }
 
         key.onmousemove = function (e) {
@@ -109,14 +132,14 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
         }
 
         key.onmouseleave = function (e) {
-            synth.releaseNote();
+            // synth.releaseNote();
+            synthUIState.playNoteNumber(0, 0);
         }
 
     }
 }
 
 function initSynth(window, document) {
-
     const synth = new WebSynth(window);
     const synthUIState = new SynthUIState();
 
@@ -126,19 +149,11 @@ function initSynth(window, document) {
 
     synthUIState.addUppdateSubscriber(
         (state) => {
+            //console.log(state);
             synth.setVolume(state.masterVolume);
-        }
-    );
-
-    synthUIState.addUppdateSubscriber(
-        (state) => {
             synth.setFilterFrequency(state.filterFrequency);
-        }
-    );
-
-    synthUIState.addUppdateSubscriber(
-        (state) => {
             synth.setFilterQ(state.filterQ);
+            synth.playNoteNumber(state.note.synthNoteNumber, state.note.noteVolume);
         }
     );
 
