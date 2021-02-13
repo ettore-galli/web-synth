@@ -16,7 +16,7 @@ class WebSynth {
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = 'lowpass';
         this.filter.frequency.value = 0;
-        this.filter.Q.value = 4;
+        this.filter.Q.value = 0;
 
         this.gainNode = this.audioContext.createGain();
         this.gainNode.gain.value = 0;
@@ -26,8 +26,6 @@ class WebSynth {
             .connect(this.gainNode)
             .connect(this.audioContext.destination);
         this.oscillator.start(0);
-
-        const thisClassContext = this;
 
         this.resumeIfSuspended = () => {
             if (this.audioContext.state === 'suspended') {
