@@ -72,21 +72,6 @@ class WebSynth {
             this.startNote(frequency, parseFloat(volume), 0.1);
         }
 
-        this.chromaticNoteMap = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(
-            (n) => 220 * Math.pow(2, n / 12)
-        );
-
-        this.pentathonicNoteMap = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26].map(
-            (n) => 220 * Math.pow(2, n / 12)
-        );
-
-        this.noteMap = this.pentathonicNoteMap;
-
-        this.playNoteNumber = (n, volume) => {
-            const frequency = n > 0 ? this.noteMap[n - 1] : 0;
-            this.playNote(frequency, parseFloat(volume));
-        }
-
         console.log("AudioPage init completed.")
 
     }
