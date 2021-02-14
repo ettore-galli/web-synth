@@ -99,7 +99,7 @@ function getControllerVaue(controllerValue, controllerMaxValue, dimensionalValue
 }
 
 
-function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
+function buildPadKeyboard(synth, noteMap, synthState, numberOfKeys, keyAreaId) {
     for (let i = 0; i < numberOfKeys; i++) {
 
         const keyNumber = i + 1;
@@ -111,7 +111,8 @@ function buildPadKeyboard(synth, synthState, numberOfKeys, keyAreaId) {
 
 
         key.onmouseover = function (e) {
-            const noteFrequency = 220 * Math.pow(2, keyNumber / 12)
+            const noteFrequency = noteMap[keyNumber];
+            
             synthState.playNoteAtControlVolume(noteFrequency)
         }
 
@@ -147,7 +148,7 @@ function sendStateToUI(state, volumeController, filterFrequency, filterQ) {
 function initSynth(window, document) {
     const synth = new WebSynth(window);
     const synthUIStateManager = new SynthUIStateManager();
-
+    const scales = new Scales();
     const volumeController = document.getElementById('volume');
     const filterFrequency = document.getElementById('filter-frequency');
     const filterQ = document.getElementById('filter-q');
@@ -176,10 +177,11 @@ function initSynth(window, document) {
     }
     );
 
-    const numberOfKeys = synth.noteMap.length;
+    const noteMap = scales.pentathonicNoteMap;
+    const numberOfKeys = noteMap.length;
 
-    buildPadKeyboard(synth, synthUIStateManager, numberOfKeys, "key-area-up");
-    buildPadKeyboard(synth, synthUIStateManager, numberOfKeys, "key-area-down");
+    buildPadKeyboard(synth, noteMap, synthUIStateManager, numberOfKeys, "key-area-up");
+    buildPadKeyboard(synth, noteMap, synthUIStateManager, numberOfKeys, "key-area-down");
 
     window.ettore = synthUIStateManager; // DEBUG-ONLY
 }
