@@ -10,9 +10,8 @@ class WebSynth {
 
         this.audioContext = new AudioContext();
 
-        this.oscillatorNoteOn = false;
         this.oscillator = this.audioContext.createOscillator();
-        this.oscillator.type = "square";
+        this.oscillator.type = "sawtooth";
 
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = 'lowpass';
@@ -32,6 +31,15 @@ class WebSynth {
             if (this.audioContext.state === 'suspended') {
                 this.audioContext.resume();
             }
+        }
+
+        this.isFromOrToZeroTransition = (v1, v2) => {
+            return (v1 === 0.0 && v2 !== 0.0) || (v1 != 0.0 && v2 === 0.0);
+        }
+        
+        this.setOscillatorType = (value) => {
+            this.resumeIfSuspended();
+            this.oscillator.type = value;
         }
 
         this.setFrequency = (value) => {
@@ -69,12 +77,10 @@ class WebSynth {
         }
 
         this.playNote = (frequency, volume) => {
-            const oscillatorNoteOn = Boolean(frequency !== 0.0);
-            if (this.oscillatorNoteOn != oscillatorNoteOn) {
-                console.log("playnote", this.oscillator.frequency.value, frequency, volume)
-                this.resumeIfSuspended();
+            this.resumeIfSuspended();
+            if (this.isFromOrToZeroTransition(this.gainNode.gain.value, volume)) {
+                console.log("play note ", this.gainNode.gain.value, volume)
                 this.startNote(frequency, parseFloat(volume), 0.1);
-                this.oscillatorNoteOn = oscillatorNoteOn;
             }
         }
 
