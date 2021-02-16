@@ -11,7 +11,7 @@ class WebSynth {
         this.audioContext = new AudioContext();
 
         this.oscillator = this.audioContext.createOscillator();
-        this.oscillator.type = "square";
+        this.oscillator.type = "sawtooth";
 
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = 'lowpass';
@@ -35,6 +35,11 @@ class WebSynth {
 
         this.isFromOrToZeroTransition = (v1, v2) => {
             return (v1 === 0.0 && v2 !== 0.0) || (v1 != 0.0 && v2 === 0.0);
+        }
+        
+        this.setOscillatorType = (value) => {
+            this.resumeIfSuspended();
+            this.oscillator.type = value;
         }
 
         this.setFrequency = (value) => {
