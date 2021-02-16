@@ -1,14 +1,15 @@
 'use strict'
 
 
-class SynthUIStateManager {
+class WebSynthControl {
     constructor(window) {
-        this.synth = new WebSynth(window);
+        this.synth = new WebSynthCore(window);
         this.state = {
             control: {
                 volume: 0.1,
                 filterFrequency: 1000,
                 filterQ: 3,
+                oscillatorType: "sawtooth"
             },
             note: {
                 noteFrequency: 0,
@@ -45,6 +46,9 @@ class SynthUIStateManager {
         this.setControlFilterQ = (value) => {
             this.updateState("control", { ...this.state.control, filterQ: value });
         }
+        this.setControlOscillatorType = (value) => {
+            this.updateState("control", { ...this.state.control, oscillatorType: value });
+        } 
 
         this.playNote = (noteFrequency, volume) => {
             this.updateState("note", {
@@ -81,6 +85,7 @@ class SynthUIStateManager {
         this.sendStateToSynth = (state, synth) => {
             synth.setFilterFrequency(state.note.filterFrequency);
             synth.setFilterQ(state.note.filterQ);
+            synth.setOscillatorType(state.control.oscillatorType);
             synth.playNote(state.note.noteFrequency, state.note.volume);
         }
 

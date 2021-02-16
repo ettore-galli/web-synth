@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Web synth</title>
     <link rel="stylesheet" href="style.css">
     <script src="./synth-core.js"></script>
     <script src="./synth-scales.js"></script>
@@ -18,17 +18,24 @@
 <body>
     <div>
 
-        vol <input type="range" id="volume" min="0" max="2" value="0" step="0.01">
+        vol <input class="slider-big" type="range" id="volume" min="0" max="1" value="0" step="0.01">
         <br />
-        frq <input type="range" id="filter-frequency" min="0" max="5000" value="0" step="1">
+        frq <input class="slider-big" type="range" id="filter-frequency" min="0" max="5000" value="0" step="1">
         <br />
-        f-q <input type="range" id="filter-q" min="0" max="10" value="0" step="0.01">
+        f-q <input class="slider-big" type="range" id="filter-q" min="0" max="10" value="0" step="0.01">
         <br />
-        <div id="debug"></div>
+        type <select class="select-big" id="oscillator-type">
+            <option value="sine">sine</option>
+            <option value="square">square</option>
+            <option value="sawtooth">sawtooth</option>
+            <option value="triangle">triangle</option>
+        </select>
         <br />
         <div id="key-area-up" class="keys-grid-container"></div>
         <div id="space" class="keys-spacer"></div>
         <div id="key-area-down" class="keys-grid-container"></div>
+        <br />
+        <div id="debug" style="height: 100px;"></div>
     </div>
 </body>
 <script>

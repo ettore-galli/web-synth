@@ -1,6 +1,6 @@
 'use strict';
 
-class WebSynth {
+class WebSynthCore {
 
     constructor(
         window
@@ -11,7 +11,7 @@ class WebSynth {
         this.audioContext = new AudioContext();
 
         this.oscillator = this.audioContext.createOscillator();
-        this.oscillator.type = "sawtooth";
+        this.oscillator.type = null;
 
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = 'lowpass';

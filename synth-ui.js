@@ -50,26 +50,28 @@ function buildPadKeyboard(noteMap, synthState, numberOfKeys, keyAreaId) {
 }
 
 
-function sendStateToUI(state, volumeController, filterFrequency, filterQ) {
+function sendStateToUI(state, volumeController, filterFrequency, filterQ, oscillatorType) {
     document.getElementById("debug").innerHTML = JSON.stringify(state);
 
     volumeController.value = state.control.volume;
     filterFrequency.value = state.control.filterFrequency;
     filterQ.value = state.control.filterQ;
+    oscillatorType.value = state.control.oscillatorType;
 }
 
 function initSynth(window, document) {
-    const synthUIStateManager = new SynthUIStateManager(window);
+    const synthUIStateManager = new WebSynthControl(window);
     const scales = new Scales();
     const volumeController = document.getElementById('volume');
     const filterFrequency = document.getElementById('filter-frequency');
     const filterQ = document.getElementById('filter-q');
+    const oscillatorType = document.getElementById('oscillator-type');
 
-    sendStateToUI(synthUIStateManager.getState(), volumeController, filterFrequency, filterQ)
+    sendStateToUI(synthUIStateManager.getState(), volumeController, filterFrequency, filterQ, oscillatorType)
 
     synthUIStateManager.addUppdateSubscriber(
         (state) => {
-            sendStateToUI(state, volumeController, filterFrequency, filterQ);
+            sendStateToUI(state, volumeController, filterFrequency, filterQ, oscillatorType);
         }
     );
 
@@ -88,6 +90,10 @@ function initSynth(window, document) {
     }
     );
 
+    oscillatorType.addEventListener('input', function () {
+        synthUIStateManager.setControlOscillatorType(this.value);
+    }
+    );
     const noteMap = scales.pentathonicNoteMap;
     const numberOfKeys = noteMap.length;
 
