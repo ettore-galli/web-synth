@@ -62,6 +62,7 @@ class SynthUIStateManager {
         this.releaseNote = () => {
             this.updateState("note", {
                 ...this.state.note,
+                noteFrequency: 0.0,
                 volume: 0.0
             });
         }

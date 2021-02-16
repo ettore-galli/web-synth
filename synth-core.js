@@ -10,6 +10,7 @@ class WebSynth {
 
         this.audioContext = new AudioContext();
 
+        this.oscillatorNoteOn = false;
         this.oscillator = this.audioContext.createOscillator();
         this.oscillator.type = "square";
 
@@ -68,8 +69,13 @@ class WebSynth {
         }
 
         this.playNote = (frequency, volume) => {
-            this.resumeIfSuspended();
-            this.startNote(frequency, parseFloat(volume), 0.1);
+            const oscillatorNoteOn = Boolean(frequency !== 0.0);
+            if (this.oscillatorNoteOn != oscillatorNoteOn) {
+                console.log("playnote", this.oscillator.frequency.value, frequency, volume)
+                this.resumeIfSuspended();
+                this.startNote(frequency, parseFloat(volume), 0.1);
+                this.oscillatorNoteOn = oscillatorNoteOn;
+            }
         }
 
         console.log("AudioPage init completed.")
