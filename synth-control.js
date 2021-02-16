@@ -6,9 +6,9 @@ class WebSynthControl {
         this.synth = new WebSynthCore(window);
         this.state = {
             control: {
-                volume: 0.1,
-                filterFrequency: 1000,
-                filterQ: 3,
+                volume: 0.03,
+                filterFrequency: 3000,
+                filterQ: 5,
                 oscillatorType: "sawtooth"
             },
             note: {
