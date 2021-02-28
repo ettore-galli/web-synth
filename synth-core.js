@@ -11,7 +11,7 @@ class WebSynthCore {
         this.audioContext = new AudioContext();
 
         this.oscillator = this.audioContext.createOscillator();
-        this.oscillator.type = null;
+        // this.oscillator.type = null;
 
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = 'lowpass';
@@ -25,6 +25,11 @@ class WebSynthCore {
             .connect(this.filter)
             .connect(this.gainNode)
             .connect(this.audioContext.destination);
+        let wave = this.audioContext.createPeriodicWave(
+            new Float32Array([0, 0, 0, 0, 0, 0, 0]),
+            new Float32Array([0, 0.7, 0.1, 0.7, 0.3, 0.7, 0.9]) 
+            );
+        this.oscillator.setPeriodicWave(wave);
         this.oscillator.start(0);
 
         this.resumeIfSuspended = () => {
@@ -39,7 +44,7 @@ class WebSynthCore {
         
         this.setOscillatorType = (value) => {
             this.resumeIfSuspended();
-            this.oscillator.type = value;
+            // this.oscillator.type = 'custom';
         }
 
         this.setFrequency = (value) => {
