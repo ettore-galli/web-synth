@@ -14,7 +14,7 @@ npm install webpack-cli --save-dev
 npm install style-loader css-loader --save-dev
 npm install html-webpack-plugin --save-dev
 npm install clean-webpack-plugin --save-dev
-npm install webpack-serve --save-dev
+npm install --save-dev webpack-dev-server
 npm audit fix
 
 ## Build
