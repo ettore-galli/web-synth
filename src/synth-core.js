@@ -1,6 +1,6 @@
 'use strict';
 
-class WebSynthCore {
+export default class WebSynthCore {
 
     constructor(
         window

@@ -1,7 +1,7 @@
 'use strict'
+import WebSynthCore from "./synth-core";
 
-
-class WebSynthControl {
+export default class WebSynthControl {
     constructor(window) {
         this.synth = new WebSynthCore(window);
         this.state = {
@@ -98,4 +98,5 @@ class WebSynthControl {
 
 }
 
+ 
 

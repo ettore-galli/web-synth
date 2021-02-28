@@ -1,6 +1,6 @@
 'use strict';
 
-class Scales {
+export default class Scales {
     constructor(a, octave) {
         console.log("Building scales...")
         
