@@ -1,3 +1,6 @@
+import WebSynthControl from "./synth-control";
+import Scales from "./synth-scales";
+
 'use strict'
 
 function getKeyIdFromNumber(keyNumber) {
@@ -59,7 +62,7 @@ function sendStateToUI(state, volumeController, filterFrequency, filterQ, oscill
     oscillatorType.value = state.control.oscillatorType;
 }
 
-function initSynth(window, document) {
+export default function initSynth(window, document) {
     const synthUIStateManager = new WebSynthControl(window);
     const scales = new Scales();
     const volumeController = document.getElementById('volume');

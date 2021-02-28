@@ -1,0 +1,34 @@
+{
+  "name": "web-synth",
+  "version": "1.0.0",
+  "description": "A musical instrument made with web audio api",
+  "main": "synth-control.js",
+  "dependencies": {},
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.2.0",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-plugin-serve": "^0.12.1"
+  },
+  "scripts": {
+    "start": "webpack serve --open",
+    "watch": "webpack --watch",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ettore-galli/web-synth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ettore-galli/web-synth/issues"
+  },
+  "homepage": "https://github.com/ettore-galli/web-synth#readme"
+}
