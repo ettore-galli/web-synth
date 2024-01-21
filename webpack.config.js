@@ -19,7 +19,7 @@ module.exports = {
     ],
     devtool: "inline-source-map",
     devServer: {
-        contentBase: "/dist"
+        static: "/dist"
     },
     output: {
         filename: '[name].bundle.js',
